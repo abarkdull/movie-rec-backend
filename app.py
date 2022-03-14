@@ -1,18 +1,38 @@
 import json
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify
 import pandas as pd
-import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
+import requests
+
 
 app = Flask(__name__)
 
 df = pd.read_csv('movie_data.csv')
+movie_set = pd.read_csv('movies_metadata.csv')
 
 
 @app.route('/')
 def index():
     return jsonify({'message': "hello world"})
+
+
+@app.route('/imdb')
+def search_kaggle_set():
+
+    q = request.args.get('q')
+
+    try:
+        print('fetching from kaggle set')
+        imdb_id = movie_set[movie_set.original_title == q]['imdb_id'].values[0]
+    except:
+        return {'message': 'movie not found'}
+
+    print('querying imdb')
+    req_url = 'https://imdb-api.com/en/API/Title/k_vzvz8a1v/' + imdb_id + '/Posters,'
+
+    r = requests.get(req_url)
+    return r.json()
 
 
 @app.route('/search')
