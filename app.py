@@ -29,10 +29,12 @@ def search_kaggle_set():
         return {'message': 'movie not found'}
 
     print('querying imdb')
-    req_url = 'https://imdb-api.com/en/API/Title/k_vzvz8a1v/' + imdb_id + '/Posters,'
+    req_url = 'https://imdb-api.com/en/API/Title/k_7vd2w9n4/' + imdb_id + '/Posters,'
 
     r = requests.get(req_url)
-    return r.json()
+    movie_recs = r.json()['similars']
+
+    return jsonify(movie_recs)
 
 
 @app.route('/search')
